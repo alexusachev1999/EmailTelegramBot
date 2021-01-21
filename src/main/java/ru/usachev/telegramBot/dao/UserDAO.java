@@ -3,8 +3,6 @@ package ru.usachev.telegramBot.dao;
 import ru.usachev.telegramBot.models.User;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class UserDAO {
     private static final String URL = "jdbc:mysql://localhost:3306/telegramBase";
@@ -27,7 +25,7 @@ public class UserDAO {
         }
     }
 
-    public String show(String userName) {
+    public String getUserEmailByName(String userName) {
         String userEmail = null;
 
         try {

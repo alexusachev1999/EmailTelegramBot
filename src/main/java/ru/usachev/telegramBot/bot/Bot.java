@@ -6,7 +6,10 @@ import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 import ru.usachev.telegramBot.dao.UserDAO;
-
+import ru.usachev.telegramBot.functions.CreateUser;
+import ru.usachev.telegramBot.functions.Function;
+import ru.usachev.telegramBot.functions.Functions;
+import ru.usachev.telegramBot.models.User;
 
 
 public class Bot extends TelegramLongPollingBot {
@@ -21,14 +24,27 @@ public class Bot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        UserDAO dao = new UserDAO();
         Message message = update.getMessage();
+        UserDAO dao = new UserDAO();
+        CreateUser createUser = new CreateUser();
         if (message != null && message.hasText()) {
-            if (message.getText().matches("[a-zA-Zа-яА-Я]+")) {
-                sendMessage(message, dao.show(message.getText()) );
+
+            if (message.getText().matches("[a-zA-Zа-яА-Я]+")){
+                sendMessage(message, "Email пользователя "+message.getText()+" "+
+                        dao.getUserEmailByName(message.getText()));
+
+            } else if (message.getText().contains(" ")&&message.getText().contains("@") ){
+                User user = createUser.createNewUser(message);
+                sendMessage(message, "Новый пользователь - "+user.getName()+" добавлен в базу");
+
             }
+
+            else {
+                Function function = Functions.getFunction(message.getText());
+                sendMessage(message, function.execute(message));
             }
         }
+    }
 
     public void sendMessage(Message message, String text){
         SendMessage sendMessage = new SendMessage();
